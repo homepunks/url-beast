@@ -37,13 +37,15 @@ else()
   endif()
 endif()
 
+find_package(Threads REQUIRED)
 
 add_executable(url_beast
   src/main.cpp
   src/router.cpp
   src/handlers.cpp
+  src/server.cpp
 )
 
 target_compile_features(url_beast PRIVATE cxx_std_23)
 target_compile_options(url_beast PRIVATE -Wall -Wextra -pedantic)
-target_link_libraries(url_beast PRIVATE boost_headers)
+target_link_libraries(url_beast PRIVATE boost_headers Threads::Threads)
