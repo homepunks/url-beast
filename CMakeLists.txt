@@ -44,6 +44,10 @@ add_executable(url_beast
   src/router.cpp
   src/handlers.cpp
   src/server.cpp
+  src/store.cpp
+  src/models.cpp
+
+  src/json_impl.cpp
 )
 
 target_compile_features(url_beast PRIVATE cxx_std_23)
