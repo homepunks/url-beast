@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <functional>
 #include <utility>
+#include <random>
 
 namespace url_beast {
 
@@ -33,6 +34,16 @@ inline Response json_response(const Request& req, http::status status, std::stri
   res.prepare_payload();
 
   return res;
+}
+
+inline std::string generate_new_link() {
+  thread_local std::mt19937 engine{std::random_device{}()};
+  constexpr std::string_view alphabet{"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"};
+  std::uniform_int_distribution<std::size_t> dist{0, alphabet.size() - 1};
+
+  std::string result(6, '\0');
+  for (char& c : result) c = alphabet[dist(engine)];
+  return result;  
 }
 
 }
