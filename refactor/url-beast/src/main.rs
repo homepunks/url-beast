@@ -1,6 +1,6 @@
 use anyhow::Context;
 use tokio::net;
-use url_beast::{init, HOST};
+use url_beast::{HOST, init};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

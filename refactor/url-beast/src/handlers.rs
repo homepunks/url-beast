@@ -1,3 +1,4 @@
+use crate::{BASE, CODE_LENGTH, Store, models};
 use axum::{
     Json,
     extract::{Path, State},
@@ -6,7 +7,6 @@ use axum::{
 };
 use serde_json::{Value, json};
 use std::collections::hash_map::Entry;
-use crate::{models, Store, BASE, CODE_LENGTH};
 
 pub async fn health_check() -> Json<Value> {
     /* TIL: axum::Json responses default to status code 200 */
@@ -38,10 +38,12 @@ pub async fn create_record(
         }
     };
 
-    println!("generated `{code}` for `{link}`", link = req.old_link);
+    println!("generated `{code}` for `{target}`");
     Ok((
         StatusCode::CREATED,
-        Json(models::NewLinkResponse { new_link: format!("{}/{}", BASE, code) }),
+        Json(models::NewLinkResponse {
+            new_link: format!("{}/{}", BASE, code),
+        }),
     ))
 }
 
