@@ -41,21 +41,26 @@ async fn health_check() -> Json<Value> {
 async fn create_record(
     State(store): State<Store>,
     Json(req): Json<models::NewLinkRequest>,
-) -> (StatusCode, Json<models::NewLinkResponse>) {
+) -> Result<(StatusCode, Json<models::NewLinkResponse>), (StatusCode, Json<Value>)> {
+    let target = url::Url::parse(&req.old_link)
+        .ok()
+        .filter(|u| matches!(u.scheme(), "http" | "https"))
+        .ok_or_else(|| (StatusCode::BAD_REQUEST, Json(json!({ "error": "invalid url"}))))?;
+
     let code = {
         let mut map = store.lock().unwrap();
         loop {
             let code = nanoid::nanoid!(CODE_LENGTH, &nanoid::alphabet::SAFE);
             if let Entry::Vacant(slot) = map.entry(code.clone()) {
-                slot.insert(req.old_link.clone());
+                slot.insert(target.to_string());
                 println!("generated `{code}` for `{link}`", link = req.old_link);
                 break code;
             }
         }
     };
     
-    (StatusCode::CREATED,
+    Ok((StatusCode::CREATED,
      Json(models::NewLinkResponse{
         new_link: code,
-    }))
+    })))
 }
