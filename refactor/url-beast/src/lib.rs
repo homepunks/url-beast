@@ -39,6 +39,9 @@ pub async fn shutdown() {
             .await;
     };
 
+    #[cfg(not(unix))]
+    panic!("No. Just no.");
+
     tokio::select! {
         _ = ctrl_c => "got ctrl+c",
         _ = term => "got sigterm",
