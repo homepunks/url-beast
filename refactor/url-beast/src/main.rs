@@ -1,6 +1,6 @@
 use anyhow::Context;
 use tokio::net;
-use url_beast::HOST;
+use url_beast::{HOST, shutdown};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -8,6 +8,9 @@ async fn main() -> anyhow::Result<()> {
         .await
         .with_context(|| format!("failed to bind {HOST}"))?;
     println!("Up and running on {}", HOST);
-    axum::serve(ln, url_beast::init()).await.context("server error")?;
+    axum::serve(ln, url_beast::init())
+        .with_graceful_shutdown(shutdown())
+        .await
+        .context("server error")?;
     Ok(())
 }
